@@ -1,0 +1,15 @@
+${{IMAGE_NAME}}:
+  from:
+    type: docker
+    url: docker://${{IMAGE_NAME}}:${{IMAGE_TAG}}
+  annotations:
+    org.opencontainers.image.title: ${{IMAGE_NAME}}
+    com.zot.logo: ${{LOGO}}
+    org.opencontainers.image.description: ${{DESCRIPTION}}
+    org.opencontainers.image.url: ${{URL}}
+    org.opencontainers.image.source: ${{SOURCE}}
+    org.opencontainers.image.licenses: "${{LICENSES}}"
+    org.opencontainers.image.vendor: |
+      ${{VENDOR}}
+    org.opencontainers.image.documentation: |
+      ${{DOCUMENTATION}}
