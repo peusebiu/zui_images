@@ -4,10 +4,29 @@ import json
 import requests
 import subprocess
 import sys
+import yaml
+import os
 
 def fetch_tags(image_name):
     r = requests.get('https://registry.hub.docker.com/v2/repositories/library/{}/tags?page_size=100'.format(image_name))
     return r.json()
+
+def add_doc_annotation(image_name):
+    stackerfile_path = "stacker.yaml"
+    with open(stackerfile_path) as f:
+        stackerfile = yaml.safe_load(f)
+
+    with open(os.path.join("docs", image_name, "content.md")) as f:
+        doc = f.readlines()
+
+    for line in doc:
+        line 
+
+    stackerfile['${{IMAGE_NAME}}']["annotations"]["org.opencontainers.image.description"] = "\n" + "".join(doc)
+
+    print(stackerfile)
+    with open(stackerfile_path, "w") as f:
+        yaml.dump(stackerfile, f, default_style=None)
 
 
 if __name__ == "__main__":
@@ -18,6 +37,7 @@ if __name__ == "__main__":
     p.add_argument('-n', '--tags-num', default=10, type=int, help='Max number of tags to push')
     p.add_argument('-u', '--username', default="", help='registry username')
     p.add_argument('-p', '--password', default="", help='registry password')
+    p.add_argument('-c', '--cosign-password', default="", help='cosign key password')
 
     args = p.parse_args()
 
@@ -27,6 +47,7 @@ if __name__ == "__main__":
     tags_num = args.tags_num
     username = args.username
     password = args.password
+    cosign_password = args.cosign_password
 
     for image in images:
         validTags = args.tag
@@ -39,8 +60,9 @@ if __name__ == "__main__":
                             validTags.append(tag["name"])
         for tag in validTags:
             print("adding annotations and pushing image: {}:{}".format(image, tag))
-            cmd = ["./build_push_image.sh", registry, image, tag, username, password]
+            #add_doc_annotation(image)
+            cmd = ["./build_push_image.sh", registry, image, tag, cosign_password, username, password]
             print(" ".join(cmd))
             result = subprocess.run(cmd, stderr=sys.stderr, stdout=sys.stdout)
             if result.returncode != 0:
-                exit(result.returncode)
+                print("pushing image: {}:{} exited with code: ".format(image, tag) + str(result.returncode))

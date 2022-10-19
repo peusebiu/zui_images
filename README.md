@@ -6,7 +6,7 @@ Annotations contents are fetched from https://github.com/docker-library/docs.git
 
 ## Usage
 ```
-usage: zui_push.py [-h] [-i IMAGE] [-t TAG] [-r REGISTRY] [-n TAGS_NUM] [-u USERNAME] [-p PASSWORD]
+usage: zui_push.py [-h] [-i IMAGE] [-t TAG] [-r REGISTRY] [-n TAGS_NUM] [-u USERNAME] [-p PASSWORD] [-c COSGIN_PASSWORD]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -21,6 +21,8 @@ optional arguments:
                         registry username
   -p PASSWORD, --password PASSWORD
                         registry password
+  -c COSIGN_PASSWORD, --cosign-password COSIGN_PASSWORD
+                        cosign key password
 ```
 
 ## Examples
@@ -28,11 +30,11 @@ optional arguments:
 ### Push last 10 tags of alpine and busybox to localhost:8080 OCI registry
 
 ```
-./zui_push.py -i busybox -i alpine -r localhost:8080 -n 10
+./zui_push.py -i busybox -i alpine -r localhost:8080 -n 10 -c <cosign_passsword>
 ```
 
 ### Push latest, 1.19.1 and 1.19.2 golang tags to localhost:8080 OCI registry
 
 ```
-./zui_push.py -i golang -t latest -t 1.19.1 -t 1.19.2 -r localhost:8080
+./zui_push.py -i golang -t latest -t 1.19.1 -t 1.19.2 -r localhost:8080 -c <cosign_passsword>
 ```
