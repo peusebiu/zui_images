@@ -61,7 +61,7 @@ if __name__ == "__main__":
         for tag in validTags:
             print("adding annotations and pushing image: {}:{}".format(image, tag))
             #add_doc_annotation(image)
-            cmd = ["./build_push_image.sh", registry, image, tag, cosign_password, username, password]
+            cmd = ["./build_push_image_regctl.sh", registry, image, tag, cosign_password, username, password]
             print(" ".join(cmd))
             result = subprocess.run(cmd, stderr=sys.stderr, stdout=sys.stdout)
             if result.returncode != 0:
