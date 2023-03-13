@@ -65,7 +65,8 @@ if __name__ == "__main__":
             print("adding annotations and pushing image: {}:{}".format(image, tag))
             #add_doc_annotation(image)
             metafile='{}_{}_metadata.json'.format(image, tag)
-            cmd = ["./build_push_image_regctl.sh", registry, image, tag, cosign_password, metafile, multiarch, username, password]
+            cmd = ["./build_push_image_regctl.sh", "-r", registry, "-i", image, "-t", tag, "-c", cosign_password,
+                   "-f", metafile, "-m", multiarch, "-u", username, "-p", password]
             print(" ".join(cmd))
             result = subprocess.run(cmd, stderr=sys.stderr, stdout=sys.stdout)
             if result.returncode != 0:
@@ -74,6 +75,7 @@ if __name__ == "__main__":
                 image_metadata = json.load(f)
             metadata.setdefault(image, {})
             metadata[image][tag] = image_metadata[image][tag]
+            metadata[image][tag]["multiarch"] = multiarch
 
     with open("image_metadata.json", "w") as f:
         json.dump(metadata, f)
