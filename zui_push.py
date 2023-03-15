@@ -37,6 +37,7 @@ if __name__ == "__main__":
     p.add_argument('-n', '--tags-num', default=10, type=int, help='Max number of tags to push')
     p.add_argument('-u', '--username', default="", help='registry username')
     p.add_argument('-p', '--password', default="", help='registry password')
+    p.add_argument('-m', '--multiarch', default="", help='upload multiarch images')
     p.add_argument('-c', '--cosign-password', default="", help='cosign key password')
 
     args = p.parse_args()
@@ -48,6 +49,8 @@ if __name__ == "__main__":
     username = args.username
     password = args.password
     cosign_password = args.cosign_password
+    multiarch = args.multiarch
+    metadata = {}
 
     for image in images:
         validTags = args.tag
@@ -61,8 +64,18 @@ if __name__ == "__main__":
         for tag in validTags:
             print("adding annotations and pushing image: {}:{}".format(image, tag))
             #add_doc_annotation(image)
-            cmd = ["./build_push_image_regctl.sh", registry, image, tag, cosign_password, username, password]
+            metafile='{}_{}_metadata.json'.format(image, tag)
+            cmd = ["./build_push_image_regctl.sh", "-r", registry, "-i", image, "-t", tag, "-c", cosign_password,
+                   "-f", metafile, "-m", multiarch, "-u", username, "-p", password]
             print(" ".join(cmd))
             result = subprocess.run(cmd, stderr=sys.stderr, stdout=sys.stdout)
             if result.returncode != 0:
                 print("pushing image: {}:{} exited with code: ".format(image, tag) + str(result.returncode))
+            with open(metafile) as f:
+                image_metadata = json.load(f)
+            metadata.setdefault(image, {})
+            metadata[image][tag] = image_metadata[image][tag]
+            metadata[image][tag]["multiarch"] = multiarch
+
+    with open("image_metadata.json", "w") as f:
+        json.dump(metadata, f)
